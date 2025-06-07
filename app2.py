@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from io import BytesIO
 
-# —— 2. 自定义 CSS：隐藏英文提示、添加中文提示 ——  
+# —— 自定义 CSS：隐藏英文提示、添加中文提示 ——  
 st.markdown(
     """
     <style>
@@ -25,11 +25,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# —— 3. 页面设置 ——  
+# —— 页面设置 ——  
 st.set_page_config(page_title="多光谱影像植被指数计算", layout="wide")
 st.title("多光谱影像植被指数计算")
 
-# —— 4. 文件上传 ——  
+# —— 文件上传 ——  
 uploaded = st.file_uploader(
     label="上传多波段 GeoTIFF",
     type=["tif", "tiff"],
@@ -57,7 +57,7 @@ if uploaded:
         )
 
         if st.button("计算指数"):
-            # 安全计算公式
+            # 安全计算
             arr = eval(formula, {"__builtins__": {}}, bands)
             flat = arr.flatten()
             df = pd.DataFrame({"value": flat})
