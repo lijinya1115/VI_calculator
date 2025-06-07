@@ -4,15 +4,19 @@ import numpy as np
 import pandas as pd
 from io import BytesIO
 
-# —— 自定义 CSS：隐藏英文提示、添加中文提示 ——  
+# —— 0. 页面配置：必须放在所有 st.xxx 调用之前 ——  
+st.set_page_config(
+    page_title="多光谱影像植被指数计算",
+    layout="wide",
+)
+
+# —— 1. 自定义 CSS：隐藏英文提示，添加中文提示 ——  
 st.markdown(
     """
     <style>
-    /* 隐藏默认的英文提示文字 */
     [data-testid="fileUploaderDropzone"] p {
         visibility: hidden;
     }
-    /* 在拖拽区添加自定义中文提示 */
     [data-testid="fileUploaderDropzone"]::before {
         content: "将 TIF/TIFF 文件拖拽到此处，或点击右侧按钮上传 (单文件限 3 GB)";
         display: block;
@@ -25,11 +29,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# —— 页面设置 ——  
-st.set_page_config(page_title="多光谱影像植被指数计算", layout="wide")
+# —— 2. 界面标题 ——  
 st.title("多光谱影像植被指数计算")
 
-# —— 文件上传 ——  
+# —— 3. 文件上传 ——  
 uploaded = st.file_uploader(
     label="上传多波段 GeoTIFF",
     type=["tif", "tiff"],
@@ -38,7 +41,7 @@ uploaded = st.file_uploader(
 
 if uploaded:
     try:
-        # 读取 GeoTIFF 波段
+        # 4. 读取 GeoTIFF 波段
         with rasterio.MemoryFile(uploaded.read()) as memfile:
             with memfile.open() as src:
                 bands = {
@@ -50,26 +53,26 @@ if uploaded:
         st.success(f"加载成功，共 {len(bands)} 个波段：{', '.join(bands.keys())}")
         st.write("已读取波段：", list(bands.keys()))
 
-        # 用户输入公式
+        # 5. 输入公式
         formula = st.text_input(
             "请输入植被指数计算公式（示例 NDVI=(B4-B3)/(B4+B3)）",
             value="(B4 - B3) / (B4 + B3)"
         )
 
         if st.button("计算指数"):
-            # 安全计算
+            # 6. 安全 eval 公式
             arr = eval(formula, {"__builtins__": {}}, bands)
             flat = arr.flatten()
             df = pd.DataFrame({"value": flat})
             df = df[np.isfinite(df)]
 
-            # 结果展示
+            # 7. 展示结果
             st.subheader("结果预览（随机抽样 10 行）")
             st.dataframe(df.sample(10))
             st.subheader("统计信息")
             st.write(df.describe())
 
-            # 下载 CSV
+            # 8. 下载 CSV
             csv_bytes = df.to_csv(index=False).encode("utf-8")
             st.download_button(
                 "下载 像元值 CSV",
@@ -78,7 +81,7 @@ if uploaded:
                 mime="text/csv"
             )
 
-            # 导出 GeoTIFF
+            # 9. 导出 GeoTIFF
             out_profile = profile.copy()
             out_profile.update(dtype=rasterio.float32, count=1)
             with rasterio.MemoryFile() as mem:
