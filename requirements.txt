@@ -1,17 +1,8 @@
-# Web 框架
 streamlit
-
-# 栅格影像读写
 rasterio
-
-# 数值计算与处理
 numpy
 pandas
-
-# 可选的绘图与科学计算（如果后续需要图表、统计分析）
 matplotlib
 scipy
-
-# 如果以后要处理 Excel 或其它格式，也可加上：
-# openpyxl    # pandas 读写 .xlsx
-# pillow      # 图像处理
+openpyxl
+pillow
