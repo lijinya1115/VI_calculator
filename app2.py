@@ -4,9 +4,6 @@ import numpy as np
 import pandas as pd
 from io import BytesIO
 
-# —— 1. 将单文件上传限制调至 3 GB（3072 MB） ——  
-st.set_option('server.maxUploadSize', 3072)
-
 # —— 2. 自定义 CSS：隐藏英文提示、添加中文提示 ——  
 st.markdown(
     """
